@@ -1,8 +1,9 @@
-using System;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
 using IdentityServer4.Validation;
+using Dapper;
+using MySql.Data.MySqlClient;
+using System;
 
 namespace IdentityService.API.Validator
 {
@@ -10,7 +11,7 @@ namespace IdentityService.API.Validator
     {
         public Task ValidateAsync(ResourceOwnerPasswordValidationContext context)
         {
-            if (context.UserName == "bao_dep_trai" && context.Password == "deocopass")
+            if (ValidateUsernamePassword(context.UserName, context.Password))
             {
                 context.Result = new GrantValidationResult(subject: "818727", authenticationMethod: "custom");
             }
@@ -20,6 +21,22 @@ namespace IdentityService.API.Validator
             }
 
             return Task.CompletedTask;
+        }
+
+        private bool ValidateUsernamePassword(string username, string password)
+        {
+            bool result = true;
+            string sql = "SELECT cu.cust_id FROM cust_user as cu WHERE cu.email = @username AND cu.password = PASSWORD(@password)";
+
+            using (var connection = new MySqlConnection(Environment.GetEnvironmentVariable("CONNECTION_STRING")))
+            {
+                string userId = connection.ExecuteScalar<string>(sql, new { username = username, password = password });
+                if (string.IsNullOrEmpty(userId))
+                {
+                    result = false;
+                }
+            }
+            return result;
         }
     }
 }

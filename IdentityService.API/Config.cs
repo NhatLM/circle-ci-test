@@ -9,6 +9,8 @@ namespace IdentityService.API
 {
     public static class Config
     {
+        // Clients and Resources can be loaded from data store. It's exactly implementation that we will use.
+        // But at this point, we use in-memory version.
         public static IEnumerable<ApiResource> Apis =>
             new List<ApiResource>
             {
@@ -17,11 +19,10 @@ namespace IdentityService.API
 
         public static IEnumerable<Client> Clients =>
             new List<Client>
-            {
-                // Later on we move client information into database for easily add/update
+            {                
                 new Client
                 {
-                    ClientId = "HollowService",
+                    ClientId = "AutoproffFrontend",
 
                     // no interactive user, use the clientid/secret for authentication
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
@@ -29,7 +30,7 @@ namespace IdentityService.API
                     // secret for authentication
                     ClientSecrets =
                     {
-                        new Secret("AutoproffHowllowService".Sha256())
+                        new Secret("AutoproffFrontend".Sha256())
                     },
 
                     // scopes that client has access to
