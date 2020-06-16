@@ -12,15 +12,16 @@ namespace IdentityService.API
         public static IEnumerable<ApiResource> Apis =>
             new List<ApiResource>
             {
-                new ApiResource("api1", "My API")
+                new ApiResource("HowllowApi", "Howllow Service APIs")
             };
 
         public static IEnumerable<Client> Clients =>
             new List<Client>
             {
+                // Later on we move client information into database for easily add/update
                 new Client
                 {
-                    ClientId = "client",
+                    ClientId = "HollowService",
 
                     // no interactive user, use the clientid/secret for authentication
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
@@ -28,11 +29,11 @@ namespace IdentityService.API
                     // secret for authentication
                     ClientSecrets =
                     {
-                        new Secret("secret".Sha256())
+                        new Secret("AutoproffHowllowService".Sha256())
                     },
 
                     // scopes that client has access to
-                    AllowedScopes = { "api1" }
+                    AllowedScopes = { "HowllowApi" }
                 }
             };
     }

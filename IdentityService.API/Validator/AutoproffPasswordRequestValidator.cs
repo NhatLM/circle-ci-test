@@ -10,8 +10,6 @@ namespace IdentityService.API.Validator
     {
         public Task ValidateAsync(ResourceOwnerPasswordValidationContext context)
         {
-            Console.WriteLine(context.UserName);
-            Console.WriteLine(context.Password);
             if (context.UserName == "bao_dep_trai" && context.Password == "deocopass")
             {
                 context.Result = new GrantValidationResult(subject: "818727", authenticationMethod: "custom");
