@@ -3,16 +3,19 @@
 
 
 using IdentityServer4.Models;
+using IdentityService.API.Validator;
 using System.Collections.Generic;
 
 namespace IdentityService.API
 {
     public static class Config
     {
+        // Clients and Resources can be loaded from data store. It's exactly implementation that we will use.
+        // But at this point, we hard code and use in-memory version.
         public static IEnumerable<ApiResource> Apis =>
             new List<ApiResource>
             {
-                new ApiResource("api1", "My API")
+                new ApiResource(Constants.ApiResourceName, Constants.ApiResourceDisplay)
             };
 
         public static IEnumerable<Client> Clients =>
@@ -20,7 +23,7 @@ namespace IdentityService.API
             {
                 new Client
                 {
-                    ClientId = "client",
+                    ClientId = Constants.ApiClient,
 
                     // no interactive user, use the clientid/secret for authentication
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
@@ -28,11 +31,11 @@ namespace IdentityService.API
                     // secret for authentication
                     ClientSecrets =
                     {
-                        new Secret("secret".Sha256())
+                        new Secret(Constants.ApiClient.Sha256())
                     },
 
                     // scopes that client has access to
-                    AllowedScopes = { "api1" }
+                    AllowedScopes = { Constants.ApiResourceName }
                 }
             };
     }
