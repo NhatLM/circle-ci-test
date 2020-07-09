@@ -4,6 +4,7 @@
 
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
+using IdentityService.API.Service;
 using IdentityService.API.Validator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -49,7 +50,7 @@ namespace IdentityService.API
                         sql => sql.MigrationsAssembly(migrationAssembly));
                 })
                 .AddResourceOwnerValidator<AutoproffPasswordRequestValidator>()
-                .AddTestUsers(Config.TestUsers);
+                .AddProfileService<ProfileService>();
 
             // not recommended for production - you need to store your key material somewhere secure
             builder.AddDeveloperSigningCredential();
@@ -80,17 +81,6 @@ namespace IdentityService.API
                     }
                     context.SaveChanges();
                 }
-
-                if (!context.ApiResources.Any())
-                {
-                    foreach (var resource in Config.Apis)
-                    {
-                        context.ApiResources.Add(resource.ToEntity());
-                    }
-                    context.SaveChanges();
-                }
-
-                
             }
         }
 

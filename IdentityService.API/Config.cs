@@ -15,17 +15,11 @@ namespace IdentityService.API
     {
         // Clients and Resources can be loaded from data store. It's exactly implementation that we will use.
         // But at this point, we hard code and use in-memory version.
-        public static IEnumerable<ApiResource> Apis =>
-            new List<ApiResource>
-            {
-                new ApiResource(Constants.ApiResourceName, Constants.ApiResourceDisplay)
-            };
-
         public static IEnumerable<IdentityResource> Identities =>
             new List<IdentityResource> {
                 new IdentityResources.OpenId(),
                 new IdentityResources.Email(),
-                new IdentityResource("customIdentityRes", new List<string> { "testClaim" })
+                new IdentityResource("role_res", new List<string> { "role" })
             };
         
 
@@ -46,23 +40,8 @@ namespace IdentityService.API
                     },
 
                     // scopes that client has access to
-                    AllowedScopes = { Constants.ApiResourceName, "openid", "email", "customIdentityRes" },
+                    AllowedScopes = { "openid", "email", "role_res" },
                     AlwaysIncludeUserClaimsInIdToken = true,
-                }
-            };
-
-        public static List<TestUser> TestUsers =>
-            new List<TestUser>
-            {
-                new TestUser
-                {
-                    SubjectId = "testID",
-                    Username = "test",
-                    Password = "testPassword",
-                    Claims = new List<Claim>
-                    {
-                        new Claim("testClaim", "will it work?")
-                    }
                 }
             };
     }

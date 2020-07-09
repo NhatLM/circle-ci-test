@@ -4,6 +4,13 @@ using IdentityServer4.Validation;
 using Dapper;
 using MySql.Data.MySqlClient;
 using System;
+using IdentityService.API.Model;
+using IdentityService.API.Repository;
+using System.Security.Cryptography;
+using System.Text;
+using System.Collections.Generic;
+using System.Security.Claims;
+using IdentityModel;
 
 namespace IdentityService.API.Validator
 {
@@ -18,20 +25,49 @@ namespace IdentityService.API.Validator
         /// </returns>
         public Task ValidateAsync(ResourceOwnerPasswordValidationContext context)
         {
-            // Temporarily hard code username and password.            
-            if (string.Equals(context.UserName, Constants.DefaultUsername) && string.Equals(context.Password, Constants.DefaultPassword))
-            // Will be replaced with real data from autoproff database.
-            // if (ValidateUsernamePassword(context.UserName, context.Password))
+            context.Result = new GrantValidationResult(TokenRequestErrors.UnauthorizedClient);
+            //get user from db
+            UserRepository userRepo = new UserRepository(new AccountsContext());
+            CustUser user = userRepo.FindByUsername(context.UserName);
+            if(user != null)
             {
-                context.Result = new GrantValidationResult(subject: Constants.ValidationResultSubject,
-                    authenticationMethod: Constants.ValidationResultMethod);
-            }
-            else
-            {
-                context.Result = new GrantValidationResult(TokenRequestErrors.UnauthorizedClient);
-            }
-
+                if(user.Password == MD5Hash(context.Password))
+                {
+                    context.Result = new GrantValidationResult(
+                        subject: user.Email, 
+                        authenticationMethod: Constants.ValidationResultMethod,
+                        claims: GetClaims(user));
+                }               
+            }           
             return Task.CompletedTask;
+        }
+
+        private string MD5Hash(string input)
+        {
+            StringBuilder hash = new StringBuilder();
+            MD5CryptoServiceProvider md5provider = new MD5CryptoServiceProvider();
+            byte[] bytes = md5provider.ComputeHash(Encoding.UTF8.GetBytes(input));
+
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                hash.Append(bytes[i].ToString("x2"));
+            }
+            return hash.ToString();
+        }
+
+        public static List<Claim> GetClaims(CustUser user)
+        {
+            List<Claim> claims = new List<Claim>();
+            claims.Add(new Claim(JwtClaimTypes.Email, user.Email));
+            
+            RoleRepository roleRepo = new RoleRepository(new AccountsContext());
+            var role = roleRepo.GetRole(user.UserLevel ?? -1);
+            if(role.Length > 0)
+            {
+                claims.Add(new Claim("role", role));               
+            }
+            
+            return claims;
         }
 
         /// <summary>
