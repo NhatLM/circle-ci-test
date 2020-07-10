@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-
+using System;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
 using IdentityService.API.Service;
@@ -22,10 +22,9 @@ namespace IdentityService.API
         public IWebHostEnvironment Environment { get; }
         public IConfiguration Configuration { get; }
 
-        public Startup(IWebHostEnvironment environment, IConfiguration configuration)
+        public Startup(IWebHostEnvironment environment)
         {
             Environment = environment;
-            Configuration = configuration;
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -35,19 +34,19 @@ namespace IdentityService.API
             // services.AddControllers();
             var migrationAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
 
+            var connectionStr = System.Environment.GetEnvironmentVariable("MySQLConnection");
+
             var builder = services.AddIdentityServer()
                 // .AddInMemoryIdentityResources(Config.Ids)
                 //.AddInMemoryApiResources(Config.Apis)
                 //.AddInMemoryClients(Config.Clients)
                 //this adds the config data from DB (clients, resources)
                 .AddConfigurationStore(options => {
-                    options.ConfigureDbContext = builder => builder.UseMySQL(Configuration.GetConnectionString("MySQLConnection"),
-                        sql => sql.MigrationsAssembly(migrationAssembly));
+                    options.ConfigureDbContext = builder => builder.UseMySQL(connectionStr, sql => sql.MigrationsAssembly(migrationAssembly));
                 })
                 //this adds the operational data from DB (codes, tokens)
                 .AddOperationalStore(options => {
-                    options.ConfigureDbContext = builder => builder.UseMySQL(Configuration.GetConnectionString("MySQLConnection"),
-                        sql => sql.MigrationsAssembly(migrationAssembly));
+                    options.ConfigureDbContext = builder => builder.UseMySQL(connectionStr, sql => sql.MigrationsAssembly(migrationAssembly));
                 })
                 .AddResourceOwnerValidator<AutoproffPasswordRequestValidator>()
                 .AddProfileService<ProfileService>();

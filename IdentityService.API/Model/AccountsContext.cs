@@ -1,7 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace IdentityService.API.Model
 {
@@ -23,9 +20,9 @@ namespace IdentityService.API.Model
         {
             if (!optionsBuilder.IsConfigured)
             {
-                var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+                var connectionStr = System.Environment.GetEnvironmentVariable("AccountSQLConnection");
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseMySQL(config.GetConnectionString("AccountSQLConnection"));
+                optionsBuilder.UseMySQL(connectionStr);
             }
         }
 
