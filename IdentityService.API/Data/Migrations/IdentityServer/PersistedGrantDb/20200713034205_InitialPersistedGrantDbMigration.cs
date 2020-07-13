@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace IdentityService.API.Data.Migrations.IdentityServer.PersistedGrantDb
+namespace IdentityService.API.Data.Migrations.IdentityServerTest.PersistedGrantDb
 {
     public partial class InitialPersistedGrantDbMigration : Migration
     {
@@ -17,7 +17,7 @@ namespace IdentityService.API.Data.Migrations.IdentityServer.PersistedGrantDb
                     ClientId = table.Column<string>(maxLength: 200, nullable: false),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     Expiration = table.Column<DateTime>(nullable: false),
-                    Data = table.Column<string>(maxLength: 200, nullable: false)
+                    Data = table.Column<string>(maxLength: 50000, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -34,7 +34,7 @@ namespace IdentityService.API.Data.Migrations.IdentityServer.PersistedGrantDb
                     ClientId = table.Column<string>(maxLength: 200, nullable: false),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     Expiration = table.Column<DateTime>(nullable: true),
-                    Data = table.Column<string>(maxLength: 200, nullable: false)
+                    Data = table.Column<string>(maxLength: 50000, nullable: false)
                 },
                 constraints: table =>
                 {

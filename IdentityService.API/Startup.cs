@@ -1,7 +1,5 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-
-using System;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
 using IdentityService.API.Service;
@@ -42,11 +40,11 @@ namespace IdentityService.API
                 //.AddInMemoryClients(Config.Clients)
                 //this adds the config data from DB (clients, resources)
                 .AddConfigurationStore(options => {
-                    options.ConfigureDbContext = builder => builder.UseMySQL(connectionStr, sql => sql.MigrationsAssembly(migrationAssembly));
+                    options.ConfigureDbContext = builder => builder.UseMySql(connectionStr, sql => sql.MigrationsAssembly(migrationAssembly));
                 })
                 //this adds the operational data from DB (codes, tokens)
                 .AddOperationalStore(options => {
-                    options.ConfigureDbContext = builder => builder.UseMySQL(connectionStr, sql => sql.MigrationsAssembly(migrationAssembly));
+                    options.ConfigureDbContext = builder => builder.UseMySql(connectionStr, sql => sql.MigrationsAssembly(migrationAssembly));
                 })
                 .AddResourceOwnerValidator<AutoproffPasswordRequestValidator>()
                 .AddProfileService<ProfileService>();
@@ -65,7 +63,7 @@ namespace IdentityService.API
                 context.Database.Migrate();
                 if (!context.Clients.Any())
                 {
-                    foreach (var client in Config.Clients)
+                    foreach(var client in Config.Clients)
                     {
                         context.Clients.Add(client.ToEntity());
                     }
