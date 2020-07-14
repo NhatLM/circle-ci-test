@@ -11,11 +11,19 @@ using System.Text;
 using System.Collections.Generic;
 using System.Security.Claims;
 using IdentityModel;
+using IdentityService.API.Repository.Interfaces;
 
 namespace IdentityService.API.Validator
 {
     public class AutoproffPasswordRequestValidator : IResourceOwnerPasswordValidator
     {
+        private readonly IUserRepository _userRepository;
+        private readonly IRoleRepository _roleRepo;
+        public AutoproffPasswordRequestValidator(IUserRepository userRepo, IRoleRepository roleRepo)
+        {
+            _userRepository = userRepo;
+            _roleRepo = roleRepo;
+        }
         /// <summary>
         /// Custom validator for grant_type = password
         /// </summary>
@@ -25,21 +33,13 @@ namespace IdentityService.API.Validator
         /// </returns>
         public Task ValidateAsync(ResourceOwnerPasswordValidationContext context)
         {
-            context.Result = new GrantValidationResult(TokenRequestErrors.UnauthorizedClient);
-            //get user from db
-            UserRepository userRepo = new UserRepository(new AccountsContext());
-            CustUser user = userRepo.FindByUsername(context.UserName);
-            if(user != null)
+            if (_userRepository.ValidateCredentials(context.UserName, context.Password))
             {
-                if(user.Password == MD5Hash(context.Password))
-                {
-                    context.Result = new GrantValidationResult(
-                        subject: user.Email, 
-                        authenticationMethod: Constants.ValidationResultMethod,
-                        claims: GetClaims(user));
-                }               
-            }           
-            return Task.CompletedTask;
+                var user = _userRepository.FindByUsername(context.UserName);
+                context.Result = new GrantValidationResult(user.Id.ToString(), OidcConstants.AuthenticationMethods.Password);
+            }
+
+            return Task.FromResult(0);
         }
 
         private string MD5Hash(string input)
@@ -55,20 +55,7 @@ namespace IdentityService.API.Validator
             return hash.ToString();
         }
 
-        public static List<Claim> GetClaims(CustUser user)
-        {
-            List<Claim> claims = new List<Claim>();
-            claims.Add(new Claim(JwtClaimTypes.Email, user.Email));
-            
-            RoleRepository roleRepo = new RoleRepository(new AccountsContext());
-            var role = roleRepo.GetRole(user.UserLevel ?? -1);
-            if(role.Length > 0)
-            {
-                claims.Add(new Claim("role", role));               
-            }
-            
-            return claims;
-        }
+    
 
         /// <summary>
         /// Validate username and password.

@@ -3,9 +3,9 @@ using System.Net.Mail;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Logging;
-using IdentityService.STS.Identity.Configuration;
+using IdentityService.Identity.Configuration;
 
-namespace IdentityService.STS.Identity.Services
+namespace IdentityService.Identity.Services
 {
     public class SmtpEmailSender : IEmailSender
     {

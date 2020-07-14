@@ -7,9 +7,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using IdentityService.STS.Identity.Configuration;
+using IdentityService.Identity.Configuration;
 
-namespace IdentityService.STS.Identity.ViewModels.Account
+namespace IdentityService.Identity.ViewModels.Account
 {
     public class LoginViewModel : LoginInputModel
     {

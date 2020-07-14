@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace IdentityService.STS.Identity.Helpers
+namespace IdentityService.Identity.Helpers
 {
 
     /// <summary>

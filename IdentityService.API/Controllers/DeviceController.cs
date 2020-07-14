@@ -16,12 +16,12 @@ using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using IdentityService.STS.Identity.Configuration;
-using IdentityService.STS.Identity.Helpers;
-using IdentityService.STS.Identity.ViewModels.Consent;
-using IdentityService.STS.Identity.ViewModels.Device;
+using IdentityService.Identity.Configuration;
+using IdentityService.Identity.Helpers;
+using IdentityService.Identity.ViewModels.Consent;
+using IdentityService.Identity.ViewModels.Device;
 
-namespace IdentityService.STS.Identity.Controllers
+namespace IdentityService.Identity.Controllers
 {
     [Authorize]
     [SecurityHeaders]

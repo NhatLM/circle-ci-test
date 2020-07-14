@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 
-namespace IdentityService.STS.Identity.ViewModels.Manage
+namespace IdentityService.Identity.ViewModels.Manage
 {
     public class ExternalLoginsViewModel
     {

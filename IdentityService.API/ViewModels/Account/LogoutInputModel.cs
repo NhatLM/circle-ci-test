@@ -4,7 +4,7 @@
 // Original file: https://github.com/IdentityServer/IdentityServer4.Quickstart.UI
 // Modified by Jan Škoruba
 
-namespace IdentityService.STS.Identity.ViewModels.Account
+namespace IdentityService.Identity.ViewModels.Account
 {
     public class LogoutInputModel
     {

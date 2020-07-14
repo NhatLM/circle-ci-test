@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace IdentityService.STS.Identity.Configuration
+namespace IdentityService.Identity.Configuration
 {
     public class CultureConfiguration
     {

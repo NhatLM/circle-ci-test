@@ -10,11 +10,11 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using IdentityService.STS.Identity.Helpers;
-using IdentityService.STS.Identity.Helpers.Localization;
-using IdentityService.STS.Identity.ViewModels.Manage;
+using IdentityService.Identity.Helpers;
+using IdentityService.Identity.Helpers.Localization;
+using IdentityService.Identity.ViewModels.Manage;
 
-namespace IdentityService.STS.Identity.Controllers
+namespace IdentityService.Identity.Controllers
 {    
     [Authorize]
     public class ManageController<TUser, TKey> : Controller
@@ -697,7 +697,7 @@ namespace IdentityService.STS.Identity.Controllers
         {
             return string.Format(
                 AuthenticatorUriFormat,
-                _urlEncoder.Encode("IdentityService.STS.Identity"),
+                _urlEncoder.Encode("IdentityService.Identity"),
                 _urlEncoder.Encode(email),
                 unformattedKey);
         }

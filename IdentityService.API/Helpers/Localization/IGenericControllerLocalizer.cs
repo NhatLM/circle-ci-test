@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Localization;
 
-namespace IdentityService.STS.Identity.Helpers.Localization
+namespace IdentityService.Identity.Helpers.Localization
 {
     public interface IGenericControllerLocalizer<out T>
     {

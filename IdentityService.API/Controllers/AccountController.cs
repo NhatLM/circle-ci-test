@@ -20,13 +20,17 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using IdentityService.STS.Identity.Configuration;
-using IdentityService.STS.Identity.Helpers;
-using IdentityService.STS.Identity.Helpers.Localization;
-using IdentityService.STS.Identity.ViewModels.Account;
+using IdentityService.Identity.Configuration;
+using IdentityService.Identity.Helpers;
+using IdentityService.Identity.Helpers.Localization;
+using IdentityService.Identity.ViewModels.Account;
+using IdentityService.API.Repository;
+using IdentityService.API.Services;
+using IdentityService.API.Repository.Interfaces;
 
-namespace IdentityService.STS.Identity.Controllers
+namespace IdentityService.Identity.Controllers
 {
     [SecurityHeaders]
     [Authorize]
@@ -42,10 +46,11 @@ namespace IdentityService.STS.Identity.Controllers
         private readonly IAuthenticationSchemeProvider _schemeProvider;
         private readonly IEventService _events;
         private readonly IEmailSender _emailSender;
+        private readonly IUserRepository _userRepository;
         private readonly IGenericControllerLocalizer<AccountController<TUser, TKey>> _localizer;
         private readonly LoginConfiguration _loginConfiguration;
         private readonly RegisterConfiguration _registerConfiguration;
-
+        private readonly AccountService _account;
         public AccountController(
             UserResolver<TUser> userResolver,
             UserManager<TUser> userManager,
@@ -57,8 +62,10 @@ namespace IdentityService.STS.Identity.Controllers
             IEmailSender emailSender,
             IGenericControllerLocalizer<AccountController<TUser, TKey>> localizer,
             LoginConfiguration loginConfiguration,
-            RegisterConfiguration registerConfiguration)
+            RegisterConfiguration registerConfiguration,
+                IHttpContextAccessor httpContextAccessor, IUserRepository userRepository)
         {
+            _userRepository = userRepository;
             _userResolver = userResolver;
             _userManager = userManager;
             _signInManager = signInManager;
@@ -70,6 +77,7 @@ namespace IdentityService.STS.Identity.Controllers
             _localizer = localizer;
             _loginConfiguration = loginConfiguration;
             _registerConfiguration = registerConfiguration;
+            _account = new AccountService(interaction, httpContextAccessor, schemeProvider, clientStore);
         }
 
         /// <summary>
@@ -99,91 +107,44 @@ namespace IdentityService.STS.Identity.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginInputModel model, string button)
         {
-            // check if we are in the context of an authorization request
-            var context = await _interaction.GetAuthorizationContextAsync(model.ReturnUrl);
-
-            // the user clicked the "cancel" button
-            if (button != "login")
-            {
-                if (context != null)
-                {
-                    // if the user cancels, send a result back into IdentityServer as if they 
-                    // denied the consent (even if this client does not require consent).
-                    // this will send back an access denied OIDC error response to the client.
-                    await _interaction.GrantConsentAsync(context, ConsentResponse.Denied);
-
-                    // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
-                    if (await _clientStore.IsPkceClientAsync(context.ClientId))
-                    {
-                        // if the client is PKCE then we assume it's native, so this change in how to
-                        // return the response is for better UX for the end user.
-                        return View("Redirect", new RedirectViewModel { RedirectUrl = model.ReturnUrl });
-                    }
-
-                    return Redirect(model.ReturnUrl);
-                }
-
-                // since we don't have a valid context, then we just go back to the home page
-                return Redirect("~/");
-            }
-
+     
             if (ModelState.IsValid)
             {
-                var user = await _userResolver.GetUserAsync(model.Username);
-                if (user != default(TUser))
+                // validate username/password against in-memory store
+                if (_userRepository.ValidateCredentials(model.Username, model.Password))
                 {
-                    var result = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, model.RememberLogin, lockoutOnFailure: true);
-                    if (result.Succeeded)
+                    AuthenticationProperties props = null;
+                    // only set explicit expiration here if persistent. 
+                    // otherwise we reply upon expiration configured in cookie middleware.
+                    if (AccountOptions.AllowRememberLogin && model.RememberLogin)
                     {
-                        await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id.ToString(), user.UserName));
-
-                        if (context != null)
+                        props = new AuthenticationProperties
                         {
-                            if (await _clientStore.IsPkceClientAsync(context.ClientId))
-                            {
-                                // if the client is PKCE then we assume it's native, so this change in how to
-                                // return the response is for better UX for the end user.
-                                return View("Redirect", new RedirectViewModel { RedirectUrl = model.ReturnUrl });
-                            }
+                            IsPersistent = true,
+                            ExpiresUtc = DateTimeOffset.UtcNow.Add(AccountOptions.RememberMeLoginDuration)
+                        };
+                    };
 
-                            // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
-                            return Redirect(model.ReturnUrl);
-                        }
+                    // issue authentication cookie with subject ID and username
+                    var user = _userRepository.FindByUsername(model.Username);
+                    await HttpContext.SignInAsync(user.Id.ToString(), user.Email, props);
 
-                        // request for a local page
-                        if (Url.IsLocalUrl(model.ReturnUrl))
-                        {
-                            return Redirect(model.ReturnUrl);
-                        }
-
-                        if (string.IsNullOrEmpty(model.ReturnUrl))
-                        {
-                            return Redirect("~/");
-                        }
-
-                        // user might have clicked on a malicious link - should be logged
-                        throw new Exception("invalid return URL");
+                    // make sure the returnUrl is still valid, and if yes - redirect back to authorize endpoint
+                    if (_interaction.IsValidReturnUrl(model.ReturnUrl))
+                    {
+                        return Redirect(model.ReturnUrl);
                     }
 
-                    if (result.RequiresTwoFactor)
-                    {
-                        return RedirectToAction(nameof(LoginWith2fa), new { model.ReturnUrl, RememberMe = model.RememberLogin });
-                    }
-
-                    if (result.IsLockedOut)
-                    {
-                        return View("Lockout");
-                    }
+                    return Redirect("~/");
                 }
-                await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials"));
-                ModelState.AddModelError(string.Empty, AccountOptions.InvalidCredentialsErrorMessage);
+
+                ModelState.AddModelError("", AccountOptions.InvalidCredentialsErrorMessage);
             }
 
             // something went wrong, show form with error
-            var vm = await BuildLoginViewModelAsync(model);
+            var vm = await _account.BuildLoginViewModelAsync(model);
             return View(vm);
         }
-
 
         /// <summary>
         /// Show logout page
@@ -609,7 +570,7 @@ namespace IdentityService.STS.Identity.Controllers
 
             return await Register(registerModel, returnUrl);
         }
-        
+
 
         /*****************************************/
         /* helper APIs for the AccountController */

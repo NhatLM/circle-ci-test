@@ -2,9 +2,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using IdentityService.Admin.EntityFramework.Shared.DbContexts;
-using IdentityService.STS.Identity.Helpers;
+using IdentityService.Identity.Helpers;
 
-namespace IdentityService.STS.Identity.Configuration.Test
+namespace IdentityService.Identity.Configuration.Test
 {
     public class StartupTest : Startup
     {

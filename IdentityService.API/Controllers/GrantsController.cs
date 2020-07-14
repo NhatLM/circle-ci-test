@@ -11,10 +11,10 @@ using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using IdentityService.STS.Identity.Helpers;
-using IdentityService.STS.Identity.ViewModels.Grants;
+using IdentityService.Identity.Helpers;
+using IdentityService.Identity.ViewModels.Grants;
 
-namespace IdentityService.STS.Identity.Controllers
+namespace IdentityService.Identity.Controllers
 {
     /// <summary>
     /// This sample controller allows a user to revoke grants given to clients

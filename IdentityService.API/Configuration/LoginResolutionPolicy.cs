@@ -1,4 +1,4 @@
-namespace IdentityService.STS.Identity.Configuration
+namespace IdentityService.Identity.Configuration
 {
     // From where should the login be sourced
     // by default it's sourced from Username

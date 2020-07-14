@@ -6,7 +6,7 @@
 
 using System.Collections.Generic;
 
-namespace IdentityService.STS.Identity.ViewModels.Consent
+namespace IdentityService.Identity.ViewModels.Consent
 {
     public class ConsentViewModel : ConsentInputModel
     {

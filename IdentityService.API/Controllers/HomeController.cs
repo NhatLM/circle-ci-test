@@ -10,10 +10,10 @@ using IdentityServer4.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
-using IdentityService.STS.Identity.Helpers;
-using IdentityService.STS.Identity.ViewModels.Home;
+using IdentityService.Identity.Helpers;
+using IdentityService.Identity.ViewModels.Home;
 
-namespace IdentityService.STS.Identity.Controllers
+namespace IdentityService.Identity.Controllers
 {
     [SecurityHeaders]
     public class HomeController : Controller

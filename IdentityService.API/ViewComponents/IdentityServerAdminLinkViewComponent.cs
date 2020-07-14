@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using IdentityService.STS.Identity.Configuration.Interfaces;
+using IdentityService.Identity.Configuration.Interfaces;
 
-namespace IdentityService.STS.Identity.ViewComponents
+namespace IdentityService.Identity.ViewComponents
 {
     public class IdentityServerAdminLinkViewComponent : ViewComponent
     {

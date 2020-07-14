@@ -7,7 +7,7 @@
 using System.Threading.Tasks;
 using IdentityServer4.Stores;
 
-namespace IdentityService.STS.Identity.Helpers
+namespace IdentityService.Identity.Helpers
 {
     public static class Extensions
     {

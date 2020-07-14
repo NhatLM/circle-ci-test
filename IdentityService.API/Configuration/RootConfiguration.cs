@@ -1,6 +1,6 @@
-using IdentityService.STS.Identity.Configuration.Interfaces;
+using IdentityService.Identity.Configuration.Interfaces;
 
-namespace IdentityService.STS.Identity.Configuration
+namespace IdentityService.Identity.Configuration
 {
     public class RootConfiguration : IRootConfiguration
     {      

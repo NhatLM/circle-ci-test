@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace IdentityService.STS.Identity.ViewModels.Manage
+namespace IdentityService.Identity.ViewModels.Manage
 {
     public class SetPasswordViewModel
     {

@@ -14,21 +14,19 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using SendGrid;
-using IdentityService.STS.Identity.Configuration;
-using IdentityService.STS.Identity.Configuration.ApplicationParts;
-using IdentityService.STS.Identity.Configuration.Constants;
-using IdentityService.STS.Identity.Configuration.Interfaces;
-using IdentityService.STS.Identity.Helpers.Localization;
-using IdentityService.STS.Identity.Services;
+using IdentityService.Identity.Configuration;
+using IdentityService.Identity.Configuration.ApplicationParts;
+using IdentityService.Identity.Configuration.Constants;
+using IdentityService.Identity.Configuration.Interfaces;
+using IdentityService.Identity.Helpers.Localization;
+using IdentityService.Identity.Services;
 using System.Linq;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Interfaces;
 using IdentityService.Admin.EntityFramework.MySql.Extensions;
-using IdentityService.Admin.EntityFramework.PostgreSQL.Extensions;
 using IdentityService.Admin.EntityFramework.Shared.Configuration;
-using IdentityService.Admin.EntityFramework.SqlServer.Extensions;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Helpers;
 
-namespace IdentityService.STS.Identity.Helpers
+namespace IdentityService.Identity.Helpers
 {
     public static class StartupHelpers
     {
@@ -149,12 +147,6 @@ namespace IdentityService.STS.Identity.Helpers
 
             switch (databaseProvider.ProviderType)
             {
-                case DatabaseProviderType.SqlServer:
-                    services.RegisterSqlServerDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext>(identityConnectionString, configurationConnectionString, persistedGrantsConnectionString);
-                    break;
-                case DatabaseProviderType.PostgreSQL:
-                    services.RegisterNpgSqlDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext>(identityConnectionString, configurationConnectionString, persistedGrantsConnectionString);
-                    break;
                 case DatabaseProviderType.MySql:
                     services.RegisterMySqlDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext>(identityConnectionString, configurationConnectionString, persistedGrantsConnectionString);
                     break;

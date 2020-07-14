@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Logging;
 
-namespace IdentityService.STS.Identity.Services
+namespace IdentityService.Identity.Services
 {
     public class EmailSender : IEmailSender
     {

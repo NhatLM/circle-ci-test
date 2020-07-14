@@ -7,7 +7,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace IdentityService.STS.Identity.ViewModels.Grants
+namespace IdentityService.Identity.ViewModels.Grants
 {
     public class GrantsViewModel
     {

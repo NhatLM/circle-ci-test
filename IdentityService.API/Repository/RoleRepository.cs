@@ -1,11 +1,12 @@
 ﻿using IdentityService.API.Model;
+using IdentityService.API.Repository.Interfaces;
 using System.Linq;
 
 namespace IdentityService.API.Repository
 {
-    public class RoleRepository
+    public class RoleRepository : IRoleRepository
     {
-        AccountsContext _context;
+        private readonly AccountsContext _context;
 
         public RoleRepository(AccountsContext context)
         {
@@ -14,12 +15,11 @@ namespace IdentityService.API.Repository
 
         public string GetRole(int roleLevel)
         {
-            using(_context)
-            {
-                string role = "";
-                role = _context.Roles.FirstOrDefault(r => r.Level == roleLevel).Name;
-                return role;
-            }
+            string role = "";
+            role = _context.Roles.FirstOrDefault(r => r.Level == roleLevel).Name;
+            return role;
         }
+
+
     }
 }

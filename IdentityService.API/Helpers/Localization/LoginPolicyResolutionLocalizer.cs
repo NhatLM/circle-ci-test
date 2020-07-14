@@ -1,6 +1,6 @@
-using IdentityService.STS.Identity.Configuration;
+using IdentityService.Identity.Configuration;
 
-namespace IdentityService.STS.Identity.Helpers.Localization
+namespace IdentityService.Identity.Helpers.Localization
 {
     public static class LoginPolicyResolutionLocalizer
     {

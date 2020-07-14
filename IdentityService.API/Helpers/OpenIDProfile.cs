@@ -1,4 +1,4 @@
-namespace IdentityService.STS.Identity.Helpers
+namespace IdentityService.Identity.Helpers
 {
     public class OpenIdProfile
     {

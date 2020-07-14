@@ -1,4 +1,4 @@
-namespace IdentityService.STS.Identity.Configuration.Constants
+namespace IdentityService.Identity.Configuration.Constants
 {
     public class ConfigurationConsts
     {

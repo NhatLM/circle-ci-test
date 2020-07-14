@@ -6,7 +6,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace IdentityService.STS.Identity.ViewModels.Account
+namespace IdentityService.Identity.ViewModels.Account
 {
     public class LoginInputModel
     {

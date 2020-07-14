@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Logging;
 using SendGrid;
-using IdentityService.STS.Identity.Configuration;
+using IdentityService.Identity.Configuration;
 using System.Threading.Tasks;
 
-namespace IdentityService.STS.Identity.Services
+namespace IdentityService.Identity.Services
 {
     public class SendgridEmailSender : IEmailSender
     {

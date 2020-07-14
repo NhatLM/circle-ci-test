@@ -5,9 +5,9 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using IdentityService.STS.Identity.Configuration;
+using IdentityService.Identity.Configuration;
 
-namespace IdentityService.STS.Identity.Helpers
+namespace IdentityService.Identity.Helpers
 {
     public static class IdentityServerBuilderExtensions
     {

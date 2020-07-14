@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
-namespace IdentityService.STS.Identity
+namespace IdentityService.Identity
 {
     public class Program
     {

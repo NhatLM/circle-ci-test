@@ -1,4 +1,4 @@
-namespace IdentityService.STS.Identity.Configuration.Interfaces
+namespace IdentityService.Identity.Configuration.Interfaces
 {
     public interface IRootConfiguration
     {

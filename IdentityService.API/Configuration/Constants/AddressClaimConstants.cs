@@ -1,4 +1,4 @@
-namespace IdentityService.STS.Identity.Configuration.Constants
+namespace IdentityService.Identity.Configuration.Constants
 {
     public static class AddressClaimConstants
     {
@@ -7,6 +7,7 @@ namespace IdentityService.STS.Identity.Configuration.Constants
         public static readonly string Region = "region";
         public static readonly string PostalCode = "postal_code";
         public static readonly string Country = "country";
+        public static readonly string WindowsAuthenticationDisplayName = "Windows";
     }
 }
 

@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Identity;
-using IdentityService.STS.Identity.Configuration;
+using IdentityService.Identity.Configuration;
 using System.Threading.Tasks;
 
-namespace IdentityService.STS.Identity.Helpers
+namespace IdentityService.Identity.Helpers
 {
     public class UserResolver<TUser> where TUser : class
     {

@@ -6,7 +6,7 @@
 
 using IdentityServer4.Models;
 
-namespace IdentityService.STS.Identity.ViewModels.Home
+namespace IdentityService.Identity.ViewModels.Home
 {
     public class ErrorViewModel
     {

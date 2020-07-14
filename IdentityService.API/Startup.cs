@@ -7,14 +7,21 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using IdentityService.Admin.EntityFramework.Shared.DbContexts;
 using IdentityService.Admin.EntityFramework.Shared.Entities.Identity;
-using IdentityService.STS.Identity.Configuration;
-using IdentityService.STS.Identity.Configuration.Constants;
-using IdentityService.STS.Identity.Configuration.Interfaces;
-using IdentityService.STS.Identity.Helpers;
+using IdentityService.Identity.Configuration;
+using IdentityService.Identity.Configuration.Constants;
+using IdentityService.Identity.Configuration.Interfaces;
+using IdentityService.Identity.Helpers;
 using IdentityService.API.Validator;
 using IdentityService.API.Services;
+using IdentityServer4.Validation;
+using IdentityServer4.AspNetIdentity;
+using IdentityServer4.Services;
+using IdentityService.API.Repository.Interfaces;
+using IdentityService.API.Repository;
+using IdentityService.API.Model;
+using Microsoft.EntityFrameworkCore;
 
-namespace IdentityService.STS.Identity
+namespace IdentityService.Identity
 {
     public class Startup
     {
@@ -48,8 +55,13 @@ namespace IdentityService.STS.Identity
 
             // Add authorization policies for MVC
             RegisterAuthorization(services);
-
+            var connectionStr = System.Environment.GetEnvironmentVariable("AccountSQLConnection");
             services.AddIdSHealthChecks<IdentityServerConfigurationDbContext, IdentityServerPersistedGrantDbContext, AdminIdentityDbContext>(Configuration);
+            services.AddDbContext<AccountsContext>(optionsAction=> optionsAction.UseMySql(connectionStr));
+            services.AddScoped<IResourceOwnerPasswordValidator, AutoproffPasswordRequestValidator>();
+            services.AddScoped<IProfileService, ProfileService>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IRoleRepository, RoleRepository>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -86,11 +98,9 @@ namespace IdentityService.STS.Identity
         public virtual void RegisterAuthentication(IServiceCollection services)
         {
             services.AddAuthenticationServices<AdminIdentityDbContext, UserIdentity, UserIdentityRole>(Configuration);
-            services.AddIdentityServer<IdentityServerConfigurationDbContext, IdentityServerPersistedGrantDbContext, UserIdentity>(Configuration);
-            //    .AddResourceOwnerValidator<AutoproffPasswordRequestValidator>()
-            //    .AddProfileService<ProfileService>();
-            //}
+            services.AddIdentityServer<IdentityServerConfigurationDbContext, IdentityServerPersistedGrantDbContext, UserIdentity>(Configuration).AddCustomUserStore();
         }
+    
 
         public virtual void RegisterAuthorization(IServiceCollection services)
         {

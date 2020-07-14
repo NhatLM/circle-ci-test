@@ -1,4 +1,4 @@
-namespace IdentityService.STS.Identity.ViewModels.Manage
+namespace IdentityService.Identity.ViewModels.Manage
 {
     public class RemoveLoginViewModel
     {

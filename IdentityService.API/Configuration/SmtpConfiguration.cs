@@ -1,4 +1,4 @@
-namespace IdentityService.STS.Identity.Configuration
+namespace IdentityService.Identity.Configuration
 {
     public class SmtpConfiguration
     {
