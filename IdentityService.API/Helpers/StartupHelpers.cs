@@ -141,9 +141,9 @@ namespace IdentityService.Identity.Helpers
         {
             var databaseProvider = configuration.GetSection(nameof(DatabaseProviderConfiguration)).Get<DatabaseProviderConfiguration>();
             
-            var identityConnectionString = configuration.GetConnectionString(ConfigurationConsts.IdentityDbConnectionStringKey);
-            var configurationConnectionString = configuration.GetConnectionString(ConfigurationConsts.ConfigurationDbConnectionStringKey);
-            var persistedGrantsConnectionString = configuration.GetConnectionString(ConfigurationConsts.PersistedGrantDbConnectionStringKey);
+            var identityConnectionString = System.Environment.GetEnvironmentVariable(ConfigurationConsts.IdentitySQLConnection);
+            var configurationConnectionString = System.Environment.GetEnvironmentVariable(ConfigurationConsts.IdentitySQLConnection);
+            var persistedGrantsConnectionString = System.Environment.GetEnvironmentVariable(ConfigurationConsts.IdentitySQLConnection);
 
             switch (databaseProvider.ProviderType)
             {
@@ -342,10 +342,10 @@ namespace IdentityService.Identity.Helpers
             where TPersistedGrantDbContext : DbContext, IAdminPersistedGrantDbContext
             where TIdentityDbContext : DbContext
         {
-            var configurationDbConnectionString = configuration.GetConnectionString(ConfigurationConsts.ConfigurationDbConnectionStringKey);
-            var persistedGrantsDbConnectionString = configuration.GetConnectionString(ConfigurationConsts.PersistedGrantDbConnectionStringKey);            
-            var identityDbConnectionString = configuration.GetConnectionString(ConfigurationConsts.IdentityDbConnectionStringKey);
-            
+            var configurationDbConnectionString = System.Environment.GetEnvironmentVariable(ConfigurationConsts.IdentitySQLConnection);
+            var persistedGrantsDbConnectionString = System.Environment.GetEnvironmentVariable(ConfigurationConsts.IdentitySQLConnection);
+            var identityDbConnectionString = System.Environment.GetEnvironmentVariable(ConfigurationConsts.IdentitySQLConnection);
+
             var healthChecksBuilder = services.AddHealthChecks()
                 .AddDbContextCheck<TConfigurationDbContext>("ConfigurationDbContext")
                 .AddDbContextCheck<TPersistedGrantDbContext>("PersistedGrantsDbContext")

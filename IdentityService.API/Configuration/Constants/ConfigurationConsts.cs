@@ -15,6 +15,8 @@ namespace IdentityService.Identity.Configuration.Constants
         public const string AdminConfigurationKey = "AdminConfiguration";
 
         public const string RegisterConfigurationKey = "RegisterConfiguration";
+
+        public const string IdentitySQLConnection = "IdentitySQLConnection";
     }
 }
 

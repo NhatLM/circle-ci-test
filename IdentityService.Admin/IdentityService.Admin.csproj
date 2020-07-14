@@ -120,9 +120,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\IdentityService.Admin.EntityFramework.MySql\IdentityService.Admin.EntityFramework.MySql.csproj" />
-        <ProjectReference Include="..\IdentityService.Admin.EntityFramework.PostgreSQL\IdentityService.Admin.EntityFramework.PostgreSQL.csproj" />
         <ProjectReference Include="..\IdentityService.Admin.EntityFramework.Shared\IdentityService.Admin.EntityFramework.Shared.csproj" />
-        <ProjectReference Include="..\IdentityService.Admin.EntityFramework.SqlServer\IdentityService.Admin.EntityFramework.SqlServer.csproj" />
     </ItemGroup>
 
 </Project>

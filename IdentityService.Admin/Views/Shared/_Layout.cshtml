@@ -1,4 +1,4 @@
-@using IdentityServer4.Extensions
+﻿@using IdentityServer4.Extensions
 @using Microsoft.AspNetCore.Mvc.Localization
 @using IdentityService.Admin.Configuration.Interfaces
 @inject IViewLocalizer Localizer
@@ -46,18 +46,6 @@
                 <a class="dropdown-item" asp-area="" asp-controller="Grant" asp-action="PersistedGrants">@Localizer["LinkPersistedGrants"]</a>
             </div>
         </div>
-
-        <!--Menu item -->
-        <div class="menu-item my-2 my-md-0 mr-md-3 dropdown">
-            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                @Localizer["TitleUsermanagement"]
-            </button>
-            <div class="dropdown-menu">
-                <a class="dropdown-item" asp-area="" asp-controller="Identity" asp-action="Users">@Localizer["LinkUsers"]</a>
-                <a class="dropdown-item" asp-area="" asp-controller="Identity" asp-action="Roles">@Localizer["LinkRoles"]</a>
-            </div>
-        </div>
-
         <!--Menu item -->
         <div class="menu-item my-2 my-md-0 mr-md-3 dropdown">
             <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">

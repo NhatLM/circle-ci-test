@@ -39,8 +39,6 @@ using IdentityService.Admin.Helpers.Localization;
 using System.Linq;
 using IdentityService.Admin.EntityFramework.MySql.Extensions;
 using IdentityService.Admin.EntityFramework.Shared.Configuration;
-using IdentityService.Admin.EntityFramework.SqlServer.Extensions;
-using IdentityService.Admin.EntityFramework.PostgreSQL.Extensions;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Helpers;
 
 namespace IdentityService.Admin.Helpers
@@ -95,20 +93,15 @@ namespace IdentityService.Admin.Helpers
         {
             var databaseProvider = configuration.GetSection(nameof(DatabaseProviderConfiguration)).Get<DatabaseProviderConfiguration>();
 
-            var identityConnectionString = configuration.GetConnectionString(ConfigurationConsts.IdentityDbConnectionStringKey);
-            var configurationConnectionString = configuration.GetConnectionString(ConfigurationConsts.ConfigurationDbConnectionStringKey);
-            var persistedGrantsConnectionString = configuration.GetConnectionString(ConfigurationConsts.PersistedGrantDbConnectionStringKey);
-            var errorLoggingConnectionString = configuration.GetConnectionString(ConfigurationConsts.AdminLogDbConnectionStringKey);
-            var auditLoggingConnectionString = configuration.GetConnectionString(ConfigurationConsts.AdminAuditLogDbConnectionStringKey);
+            var identityConnectionString = System.Environment.GetEnvironmentVariable(ConfigurationConsts.IdentitySQLConnection);
+            var configurationConnectionString = System.Environment.GetEnvironmentVariable(ConfigurationConsts.IdentitySQLConnection);
+            var persistedGrantsConnectionString = System.Environment.GetEnvironmentVariable(ConfigurationConsts.IdentitySQLConnection);
+            var errorLoggingConnectionString = System.Environment.GetEnvironmentVariable(ConfigurationConsts.IdentitySQLConnection);
+            var auditLoggingConnectionString = System.Environment.GetEnvironmentVariable(ConfigurationConsts.IdentitySQLConnection);
 
             switch (databaseProvider.ProviderType)
             {
-                case DatabaseProviderType.SqlServer:
-                    services.RegisterSqlServerDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLoggingDbContext>(identityConnectionString, configurationConnectionString, persistedGrantsConnectionString, errorLoggingConnectionString, auditLoggingConnectionString);
-                    break;
-                case DatabaseProviderType.PostgreSQL:
-                    services.RegisterNpgSqlDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLoggingDbContext>(identityConnectionString, configurationConnectionString, persistedGrantsConnectionString, errorLoggingConnectionString, auditLoggingConnectionString);
-                    break;
+               
                 case DatabaseProviderType.MySql:
                     services.RegisterMySqlDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLoggingDbContext>(identityConnectionString, configurationConnectionString, persistedGrantsConnectionString, errorLoggingConnectionString, auditLoggingConnectionString);
                     break;
@@ -425,11 +418,11 @@ namespace IdentityService.Admin.Helpers
             where TLogDbContext : DbContext, IAdminLogDbContext
             where TAuditLoggingDbContext : DbContext, IAuditLoggingDbContext<AuditLog>
         {
-            var configurationDbConnectionString = configuration.GetConnectionString(ConfigurationConsts.ConfigurationDbConnectionStringKey);
-            var persistedGrantsDbConnectionString = configuration.GetConnectionString(ConfigurationConsts.PersistedGrantDbConnectionStringKey);
-            var identityDbConnectionString = configuration.GetConnectionString(ConfigurationConsts.IdentityDbConnectionStringKey);
-            var logDbConnectionString = configuration.GetConnectionString(ConfigurationConsts.AdminLogDbConnectionStringKey);
-            var auditLogDbConnectionString = configuration.GetConnectionString(ConfigurationConsts.AdminAuditLogDbConnectionStringKey);
+            var configurationDbConnectionString = System.Environment.GetEnvironmentVariable(ConfigurationConsts.IdentitySQLConnection);
+            var persistedGrantsDbConnectionString = System.Environment.GetEnvironmentVariable(ConfigurationConsts.IdentitySQLConnection);
+            var identityDbConnectionString = System.Environment.GetEnvironmentVariable(ConfigurationConsts.IdentitySQLConnection);
+            var logDbConnectionString = System.Environment.GetEnvironmentVariable(ConfigurationConsts.IdentitySQLConnection);
+            var auditLogDbConnectionString = System.Environment.GetEnvironmentVariable(ConfigurationConsts.IdentitySQLConnection);
 
             var identityServerUri = adminConfiguration.IdentityServerBaseUrl;
             var healthChecksBuilder = services.AddHealthChecks()

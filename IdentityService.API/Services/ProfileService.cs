@@ -27,15 +27,12 @@ namespace IdentityService.API.Services
             var sub = context.Subject.GetSubjectId();
 
             var user = _userRepository.FindBytId(context.Subject.GetSubjectId());
-
-            var claims = new List<Claim>
+            if (user != null)
             {
-                new Claim("role", "MyRole"),
-                new Claim("role", "dataEventRecords.user"),
-                new Claim("email", user.Email)
-            };
-
-            context.IssuedClaims = claims;
+                var claims = _userRepository.GetClaims(user);
+                claims.Add(new Claim("role", "MyRole"));
+                context.IssuedClaims = claims;
+            }
         }
 
         public async Task IsActiveAsync(IsActiveContext context)

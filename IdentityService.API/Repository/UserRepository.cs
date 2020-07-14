@@ -51,8 +51,7 @@ namespace IdentityService.API.Repository
         {
             List<Claim> claims = new List<Claim>();
             claims.Add(new Claim(JwtClaimTypes.Email, user.Email));
-
-
+            claims.Add(new Claim(JwtClaimTypes.Name, user.Name));
             var role = _roleRepository.GetRole(user.UserLevel ?? -1);
             if (role.Length > 0)
             {
