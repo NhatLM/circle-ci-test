@@ -16,15 +16,14 @@ namespace IdentityService.API.Model
         public virtual DbSet<CustUser> CustUser { get; set; }
         public virtual DbSet<Roles> Roles { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                var connectionStr = System.Environment.GetEnvironmentVariable("AccountSQLConnection");
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseMySql(connectionStr);
-            }
-        }
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    if (!optionsBuilder.IsConfigured)
+        //    {
+        //        var connectionStr = System.Environment.GetEnvironmentVariable("AccountSQLConnection");
+        //        optionsBuilder.UseMySql(connectionStr);
+        //    }
+        //}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

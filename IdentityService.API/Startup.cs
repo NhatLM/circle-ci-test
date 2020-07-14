@@ -1,106 +1,137 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-using IdentityServer4.EntityFramework.DbContexts;
-using IdentityServer4.EntityFramework.Mappers;
-using IdentityService.API.Service;
-using IdentityService.API.Validator;
+using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Linq;
-using System.Reflection;
+using IdentityService.Admin.EntityFramework.Shared.DbContexts;
+using IdentityService.Admin.EntityFramework.Shared.Entities.Identity;
+using IdentityService.Identity.Configuration;
+using IdentityService.Identity.Configuration.Constants;
+using IdentityService.Identity.Configuration.Interfaces;
+using IdentityService.Identity.Helpers;
+using IdentityService.API.Validator;
+using IdentityService.API.Services;
+using IdentityServer4.Validation;
+using IdentityServer4.AspNetIdentity;
+using IdentityServer4.Services;
+using IdentityService.API.Repository.Interfaces;
+using IdentityService.API.Repository;
+using IdentityService.API.Model;
+using Microsoft.EntityFrameworkCore;
 
-namespace IdentityService.API
+namespace IdentityService.Identity
 {
     public class Startup
     {
-        public IWebHostEnvironment Environment { get; }
         public IConfiguration Configuration { get; }
+        public IWebHostEnvironment Environment { get; }
 
-        public Startup(IWebHostEnvironment environment)
+        public Startup(IWebHostEnvironment environment, IConfiguration configuration)
         {
+            Configuration = configuration;
             Environment = environment;
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            // uncomment, if you want to add an MVC-based UI
-            // services.AddControllersWithViews();
-            // services.AddControllers();
-            var migrationAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+            var rootConfiguration = CreateRootConfiguration();
+            services.AddSingleton(rootConfiguration);
 
-            var connectionStr = System.Environment.GetEnvironmentVariable("MySQLConnection");
+            // Register DbContexts for IdentityServer and Identity
+            RegisterDbContexts(services);
 
-            var builder = services.AddIdentityServer()
-                // .AddInMemoryIdentityResources(Config.Ids)
-                //.AddInMemoryApiResources(Config.Apis)
-                //.AddInMemoryClients(Config.Clients)
-                //this adds the config data from DB (clients, resources)
-                .AddConfigurationStore(options => {
-                    options.ConfigureDbContext = builder => builder.UseMySql(connectionStr, sql => sql.MigrationsAssembly(migrationAssembly));
-                })
-                //this adds the operational data from DB (codes, tokens)
-                .AddOperationalStore(options => {
-                    options.ConfigureDbContext = builder => builder.UseMySql(connectionStr, sql => sql.MigrationsAssembly(migrationAssembly));
-                })
-                .AddResourceOwnerValidator<AutoproffPasswordRequestValidator>()
-                .AddProfileService<ProfileService>();
+            // Add email senders which is currently setup for SendGrid and SMTP
+            services.AddEmailSenders(Configuration);
 
-            // not recommended for production - you need to store your key material somewhere secure
-            builder.AddDeveloperSigningCredential();
+            // Add services for authentication, including Identity model and external providers
+            RegisterAuthentication(services);
+
+            // Add all dependencies for Asp.Net Core Identity in MVC - these dependencies are injected into generic Controllers
+            // Including settings for MVC and Localization
+            // If you want to change primary keys or use another db model for Asp.Net Core Identity:
+            services.AddMvcWithLocalization<UserIdentity, string>(Configuration);
+
+            // Add authorization policies for MVC
+            RegisterAuthorization(services);
+            var connectionStr = System.Environment.GetEnvironmentVariable("AccountSQLConnection");
+            services.AddIdSHealthChecks<IdentityServerConfigurationDbContext, IdentityServerPersistedGrantDbContext, AdminIdentityDbContext>(Configuration);
+            services.AddDbContext<AccountsContext>(optionsAction=> optionsAction.UseMySql(connectionStr));
+            services.AddScoped<IResourceOwnerPasswordValidator, AutoproffPasswordRequestValidator>();
+            services.AddScoped<IProfileService, ProfileService>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IRoleRepository, RoleRepository>();
         }
 
-        private void InitDB(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-            {
-                serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
-
-                var context = serviceScope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
-                context.Database.Migrate();
-                if (!context.Clients.Any())
-                {
-                    foreach(var client in Config.Clients)
-                    {
-                        context.Clients.Add(client.ToEntity());
-                    }
-                    context.SaveChanges();
-                }
-
-                if (!context.IdentityResources.Any())
-                {
-                    foreach (var resource in Config.Identities)
-                    {
-                        context.IdentityResources.Add(resource.ToEntity());
-                    }
-                    context.SaveChanges();
-                }
-            }
-        }
-
-        public void Configure(IApplicationBuilder app)
-        {
-            if (Environment.IsDevelopment())
+            if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
-            // uncomment if you want to add MVC
-            // app.UseStaticFiles();
+            // Add custom security headers
+            app.UseSecurityHeaders();
+
+            app.UseStaticFiles();
+            UseAuthentication(app);
+            app.UseMvcLocalizationServices();
+
             app.UseRouting();
+            app.UseAuthorization();
+            app.UseEndpoints(endpoint =>
+            {
+                endpoint.MapDefaultControllerRoute();
+                endpoint.MapHealthChecks("/health", new HealthCheckOptions
+                {
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                });
+            });
+        }
 
+        public virtual void RegisterDbContexts(IServiceCollection services)
+        {
+            services.RegisterDbContexts<AdminIdentityDbContext, IdentityServerConfigurationDbContext, IdentityServerPersistedGrantDbContext>(Configuration);
+        }
+
+        public virtual void RegisterAuthentication(IServiceCollection services)
+        {
+            services.AddAuthenticationServices<AdminIdentityDbContext, UserIdentity, UserIdentityRole>(Configuration);
+            services.AddIdentityServer<IdentityServerConfigurationDbContext, IdentityServerPersistedGrantDbContext, UserIdentity>(Configuration).AddCustomUserStore();
+        }
+    
+
+        public virtual void RegisterAuthorization(IServiceCollection services)
+        {
+            var rootConfiguration = CreateRootConfiguration();
+            services.AddAuthorizationPolicies(rootConfiguration);
+        }
+
+        public virtual void UseAuthentication(IApplicationBuilder app)
+        {
             app.UseIdentityServer();
+        }
 
-            // uncomment, if you want to add MVC
-            // app.UseAuthorization();
-            // app.UseEndpoints(endpoints =>
-            // {
-            //     endpoints.MapDefaultControllerRoute();
-            // });
-            InitDB(app);
+        protected IRootConfiguration CreateRootConfiguration()
+        {
+            var rootConfiguration = new RootConfiguration();
+            Configuration.GetSection(ConfigurationConsts.AdminConfigurationKey).Bind(rootConfiguration.AdminConfiguration);
+            Configuration.GetSection(ConfigurationConsts.RegisterConfigurationKey).Bind(rootConfiguration.RegisterConfiguration);
+            return rootConfiguration;
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
