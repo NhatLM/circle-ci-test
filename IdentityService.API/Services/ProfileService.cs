@@ -1,13 +1,7 @@
 ﻿using IdentityServer4.Models;
 using IdentityServer4.Services;
-using IdentityService.API.Model;
-using IdentityService.API.Repository;
 using System.Threading.Tasks;
 using System.Linq;
-using System.Collections.Generic;
-using System.Security.Claims;
-using IdentityModel;
-using IdentityService.API.Validator;
 using IdentityService.API.Repository.Interfaces;
 using IdentityServer4.Extensions;
 
@@ -30,8 +24,7 @@ namespace IdentityService.API.Services
             if (user != null)
             {
                 var claims = _userRepository.GetClaims(user);
-                claims.Add(new Claim("role", "MyRole"));
-                context.IssuedClaims = claims;
+                context.IssuedClaims = claims.Where(x => context.RequestedClaimTypes.Contains(x.Type)).ToList();
             }
         }
 

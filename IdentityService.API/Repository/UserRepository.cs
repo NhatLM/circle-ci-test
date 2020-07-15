@@ -21,19 +21,18 @@ namespace IdentityService.API.Repository
 
         public CustUser FindByUsername(string username)
         {
-
-            return _context.CustUser.FirstOrDefault(c => c.Email == username);
-
+            var active = 1;
+            return _context.CustUser.FirstOrDefault(c => c.Email == username && c.Active == active);
         }
-        public bool ValidateCredentials(string username, string password)
+        public CustUser ValidateCredentials(string username, string password)
         {
             var user = FindByUsername(username);
-            if (user != null)
+            if (user != null && user.Password.Equals(MD5Hash(password)))
             {
-                return user.Password.Equals(MD5Hash(password));
+                return user;
             }
 
-            return false;
+            return null;
         }
         private string MD5Hash(string input)
         {
@@ -52,12 +51,9 @@ namespace IdentityService.API.Repository
             List<Claim> claims = new List<Claim>();
             claims.Add(new Claim(JwtClaimTypes.Email, user.Email));
             claims.Add(new Claim(JwtClaimTypes.Name, user.Name));
-            var role = _roleRepository.GetRole(user.UserLevel ?? -1);
-            if (role.Length > 0)
-            {
-                claims.Add(new Claim("role", role));
-            }
-
+            claims.Add(new Claim("role", _roleRepository.GetRole(user.UserLevel ?? -1)));
+            bool isAdmin = user.UserLevel < Constants.ADMIN_MINIMUM_USERLEVEL ? true : false;
+            claims.Add(new Claim("is_admin", isAdmin.ToString()));
             return claims;
         }
 
