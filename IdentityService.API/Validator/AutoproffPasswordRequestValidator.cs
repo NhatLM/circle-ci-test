@@ -4,11 +4,26 @@ using IdentityServer4.Validation;
 using Dapper;
 using MySql.Data.MySqlClient;
 using System;
+using IdentityService.API.Model;
+using IdentityService.API.Repository;
+using System.Security.Cryptography;
+using System.Text;
+using System.Collections.Generic;
+using System.Security.Claims;
+using IdentityModel;
+using IdentityService.API.Repository.Interfaces;
 
 namespace IdentityService.API.Validator
 {
     public class AutoproffPasswordRequestValidator : IResourceOwnerPasswordValidator
     {
+        private readonly IUserRepository _userRepository;
+        private readonly IRoleRepository _roleRepo;
+        public AutoproffPasswordRequestValidator(IUserRepository userRepo, IRoleRepository roleRepo)
+        {
+            _userRepository = userRepo;
+            _roleRepo = roleRepo;
+        }
         /// <summary>
         /// Custom validator for grant_type = password
         /// </summary>
@@ -18,21 +33,29 @@ namespace IdentityService.API.Validator
         /// </returns>
         public Task ValidateAsync(ResourceOwnerPasswordValidationContext context)
         {
-            // Temporarily hard code username and password.            
-            if (string.Equals(context.UserName, Constants.DefaultUsername) && string.Equals(context.Password, Constants.DefaultPassword))
-            // Will be replaced with real data from autoproff database.
-            // if (ValidateUsernamePassword(context.UserName, context.Password))
+            if (_userRepository.ValidateCredentials(context.UserName, context.Password))
             {
-                context.Result = new GrantValidationResult(subject: Constants.ValidationResultSubject,
-                    authenticationMethod: Constants.ValidationResultMethod);
-            }
-            else
-            {
-                context.Result = new GrantValidationResult(TokenRequestErrors.UnauthorizedClient);
+                var user = _userRepository.FindByUsername(context.UserName);
+                context.Result = new GrantValidationResult(user.Id.ToString(), OidcConstants.AuthenticationMethods.Password);
             }
 
-            return Task.CompletedTask;
+            return Task.FromResult(0);
         }
+
+        private string MD5Hash(string input)
+        {
+            StringBuilder hash = new StringBuilder();
+            MD5CryptoServiceProvider md5provider = new MD5CryptoServiceProvider();
+            byte[] bytes = md5provider.ComputeHash(Encoding.UTF8.GetBytes(input));
+
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                hash.Append(bytes[i].ToString("x2"));
+            }
+            return hash.ToString();
+        }
+
+    
 
         /// <summary>
         /// Validate username and password.
