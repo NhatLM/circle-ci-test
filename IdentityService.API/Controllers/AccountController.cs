@@ -110,8 +110,9 @@ namespace IdentityService.Identity.Controllers
      
             if (ModelState.IsValid)
             {
+                var user = _userRepository.ValidateCredentials(model.Username, model.Password);
                 // validate username/password against in-memory store
-                if (_userRepository.ValidateCredentials(model.Username, model.Password))
+                if ( user != null)
                 {
                     AuthenticationProperties props = null;
                     // only set explicit expiration here if persistent. 
@@ -126,7 +127,6 @@ namespace IdentityService.Identity.Controllers
                     };
 
                     // issue authentication cookie with subject ID and username
-                    var user = _userRepository.FindByUsername(model.Username);
                     await HttpContext.SignInAsync(user.Id.ToString(), user.Email, props);
 
                     // make sure the returnUrl is still valid, and if yes - redirect back to authorize endpoint

@@ -10,7 +10,7 @@ namespace IdentityService.API.Repository.Interfaces
     public interface IUserRepository
     {
         CustUser FindByUsername(string username);
-        bool ValidateCredentials(string username, string password);
+        CustUser ValidateCredentials(string username, string password);
         List<Claim> GetClaims(CustUser user);
         CustUser  FindBytId(string id);
 

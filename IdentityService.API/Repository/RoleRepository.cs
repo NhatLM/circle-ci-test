@@ -1,5 +1,6 @@
 ﻿using IdentityService.API.Model;
 using IdentityService.API.Repository.Interfaces;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace IdentityService.API.Repository

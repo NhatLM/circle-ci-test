@@ -1,15 +1,8 @@
 using System.Threading.Tasks;
-using IdentityServer4.Models;
 using IdentityServer4.Validation;
 using Dapper;
 using MySql.Data.MySqlClient;
 using System;
-using IdentityService.API.Model;
-using IdentityService.API.Repository;
-using System.Security.Cryptography;
-using System.Text;
-using System.Collections.Generic;
-using System.Security.Claims;
 using IdentityModel;
 using IdentityService.API.Repository.Interfaces;
 
@@ -18,11 +11,9 @@ namespace IdentityService.API.Validator
     public class AutoproffPasswordRequestValidator : IResourceOwnerPasswordValidator
     {
         private readonly IUserRepository _userRepository;
-        private readonly IRoleRepository _roleRepo;
-        public AutoproffPasswordRequestValidator(IUserRepository userRepo, IRoleRepository roleRepo)
+        public AutoproffPasswordRequestValidator(IUserRepository userRepo)
         {
             _userRepository = userRepo;
-            _roleRepo = roleRepo;
         }
         /// <summary>
         /// Custom validator for grant_type = password
@@ -33,29 +24,14 @@ namespace IdentityService.API.Validator
         /// </returns>
         public Task ValidateAsync(ResourceOwnerPasswordValidationContext context)
         {
-            if (_userRepository.ValidateCredentials(context.UserName, context.Password))
+            var user = _userRepository.ValidateCredentials(context.UserName, context.Password);
+            if (user != null)
             {
-                var user = _userRepository.FindByUsername(context.UserName);
                 context.Result = new GrantValidationResult(user.Id.ToString(), OidcConstants.AuthenticationMethods.Password);
             }
 
             return Task.FromResult(0);
         }
-
-        private string MD5Hash(string input)
-        {
-            StringBuilder hash = new StringBuilder();
-            MD5CryptoServiceProvider md5provider = new MD5CryptoServiceProvider();
-            byte[] bytes = md5provider.ComputeHash(Encoding.UTF8.GetBytes(input));
-
-            for (int i = 0; i < bytes.Length; i++)
-            {
-                hash.Append(bytes[i].ToString("x2"));
-            }
-            return hash.ToString();
-        }
-
-    
 
         /// <summary>
         /// Validate username and password.
