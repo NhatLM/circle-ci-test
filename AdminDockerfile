@@ -1,0 +1,23 @@
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
+WORKDIR /build
+
+COPY ["/IdentityService.Admin/IdentityService.Admin.csproj", "IdentityService.Admin/"]
+COPY ["IdentityService.Admin.EntityFramework.Shared/IdentityService.Admin.EntityFramework.Shared.csproj", "IdentityService.Admin.EntityFramework.Shared/"]
+COPY ["IdentityService.Admin.EntityFramework.MySql/IdentityService.Admin.EntityFramework.MySql.csproj", "IdentityService.Admin.EntityFramework.MySql/"]
+RUN dotnet restore "IdentityService.Admin/IdentityService.Admin.csproj"
+
+COPY . .
+WORKDIR "/build/IdentityService.Admin"
+RUN dotnet build "IdentityService.Admin.csproj" -c Release -o /app
+RUN dotnet publish -c release -r debian-x64 -o /app
+
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS final
+WORKDIR /app
+COPY --from=build /app .
+ENV ASPNETCORE_URLS http://+:80
+ENTRYPOINT ["dotnet", "IdentityService.Admin.dll"]
+
+# docker build
+# docker build -f AdminDockerfile -t identity-admin .
+# docker run
+# docker run -e IdentitySQLConnection=server=identity-db-dev.cwzsaaxfb2wu.eu-central-1.rds.amazonaws.com;database=IdentityServer4Admin2;user=admin;password=Autoproff1234 -e AccountSQLConnection=server=identity-db-dev.cwzsaaxfb2wu.eu-central-1.rds.amazonaws.com;database=accounts;user=admin;password=Autoproff1234 -e IdentityServerBaseUrl=http://54.93.187.11  -d -p 44370:80 --name admin-identity admin-identity

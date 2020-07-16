@@ -23,6 +23,8 @@ namespace IdentityService.Admin.Configuration.Constants
         public const string AdminAuditLogDbConnectionStringKey = "AdminAuditLogDbConnection";
 
         public const string IdentitySQLConnection = "IdentitySQLConnection";
+
+        public const string IdentityServerBaseUrl = "IdentityServerBaseUrl";
     }
 }
 
