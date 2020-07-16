@@ -1,6 +1,5 @@
 ﻿using IdentityService.API.Model;
 using IdentityService.API.Repository.Interfaces;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace IdentityService.API.Repository
@@ -14,11 +13,9 @@ namespace IdentityService.API.Repository
             _context = context;
         }
 
-        public string GetRole(int roleLevel)
+        public Roles GetRoleByLevel(int roleLevel)
         {
-            string role = "";
-            role = _context.Roles.FirstOrDefault(r => r.Level == roleLevel).Name;
-            return role;
+            return _context.Roles.FirstOrDefault(r => r.Level == roleLevel);
         }
 
 
