@@ -25,6 +25,7 @@ using Skoruba.IdentityServer4.Admin.EntityFramework.Interfaces;
 using IdentityService.Admin.EntityFramework.MySql.Extensions;
 using IdentityService.Admin.EntityFramework.Shared.Configuration;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Helpers;
+using IdentityService.API.Configuration.Constants;
 
 namespace IdentityService.Identity.Helpers
 {

@@ -1,4 +1,5 @@
 ﻿using IdentityModel;
+using IdentityService.API.Configuration.Constants;
 using IdentityService.API.Model;
 using IdentityService.API.Repository.Interfaces;
 using System.Collections.Generic;
@@ -51,9 +52,9 @@ namespace IdentityService.API.Repository
             List<Claim> claims = new List<Claim>();
             claims.Add(new Claim(JwtClaimTypes.Email, user.Email));
             claims.Add(new Claim(JwtClaimTypes.Name, user.Name));
-            claims.Add(new Claim("role", _roleRepository.GetRole(user.UserLevel ?? -1)));
-            bool isAdmin = user.UserLevel < Constants.ADMIN_MINIMUM_USERLEVEL ? true : false;
-            claims.Add(new Claim("is_admin", isAdmin.ToString()));
+            claims.Add(new Claim(RolesClaimConsts.Role, _roleRepository.GetRole(user.UserLevel ?? -1)));
+            bool isAdmin = user.UserLevel < AuthorizationConsts.MinimumLevelToBeAdmin ? true : false;
+            claims.Add(new Claim(RolesClaimConsts.IsAdmin, isAdmin.ToString()));
             return claims;
         }
 
