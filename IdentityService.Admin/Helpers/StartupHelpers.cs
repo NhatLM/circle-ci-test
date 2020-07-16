@@ -367,7 +367,7 @@ namespace IdentityService.Admin.Helpers
                         })
                     .AddOpenIdConnect(AuthenticationConsts.OidcAuthenticationScheme, options =>
                     {
-                        options.Authority = System.Environment.GetEnvironmentVariable(ConfigurationConsts.IdentityServerBaseUrl); ;
+                        options.Authority = System.Environment.GetEnvironmentVariable(ConfigurationConsts.IdentityServerBaseUrl);
                         options.RequireHttpsMetadata = adminConfiguration.RequireHttpsMetadata;
                         options.ClientId = adminConfiguration.ClientId;
                         options.ClientSecret = adminConfiguration.ClientSecret;
@@ -434,7 +434,7 @@ namespace IdentityService.Admin.Helpers
             var logDbConnectionString = System.Environment.GetEnvironmentVariable(ConfigurationConsts.IdentitySQLConnection);
             var auditLogDbConnectionString = System.Environment.GetEnvironmentVariable(ConfigurationConsts.IdentitySQLConnection);
 
-            var identityServerUri = System.Environment.GetEnvironmentVariable(ConfigurationConsts.IdentityServerBaseUrl); ;
+            var identityServerUri = System.Environment.GetEnvironmentVariable(ConfigurationConsts.IdentityServerBaseUrl);
             var healthChecksBuilder = services.AddHealthChecks()
                 .AddDbContextCheck<TConfigurationDbContext>("ConfigurationDbContext")
                 .AddDbContextCheck<TPersistedGrantDbContext>("PersistedGrantsDbContext")
