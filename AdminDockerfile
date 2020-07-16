@@ -18,6 +18,6 @@ ENV ASPNETCORE_URLS http://+:80
 ENTRYPOINT ["dotnet", "IdentityService.Admin.dll"]
 
 # docker build
-# docker build -f AdminDockerfile -t admin-identity .
+# docker build -f AdminDockerfile -t identity-admin .
 # docker run
-# docker run -e IdentitySQLConnection=server=localhost;database=IdentityServer4Admin2;user=root;password=Nghi@1234 -e AccountSQLConnection=server=localhost;database=Accounts;user=root;password=Nghi@1234 -d -p 44370:80 --name admin-identity admin-identity
+# docker run -e IdentitySQLConnection=server=identity-db-dev.cwzsaaxfb2wu.eu-central-1.rds.amazonaws.com;database=IdentityServer4Admin2;user=admin;password=Autoproff1234 -e AccountSQLConnection=server=identity-db-dev.cwzsaaxfb2wu.eu-central-1.rds.amazonaws.com;database=accounts;user=admin;password=Autoproff1234 -e IdentityServerBaseUrl=http://54.93.187.11  -d -p 44370:80 --name admin-identity admin-identity

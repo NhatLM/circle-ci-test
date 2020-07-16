@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using IdentityService.Admin.Configuration.Constants;
 using IdentityService.Admin.Configuration.Interfaces;
+using System;
 
 namespace IdentityService.Admin.Controllers
 {
@@ -21,7 +22,7 @@ namespace IdentityService.Admin.Controllers
 
         public IActionResult AccessDenied()
         {
-            ViewData["IdentityServerBaseUrl"] = _rootConfiguration.AdminConfiguration.IdentityServerBaseUrl;
+            ViewData["IdentityServerBaseUrl"] = System.Environment.GetEnvironmentVariable(ConfigurationConsts.IdentityServerBaseUrl);
 
             return View();
         }

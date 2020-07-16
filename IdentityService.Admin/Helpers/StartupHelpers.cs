@@ -40,6 +40,9 @@ using System.Linq;
 using IdentityService.Admin.EntityFramework.MySql.Extensions;
 using IdentityService.Admin.EntityFramework.Shared.Configuration;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Helpers;
+using System.Net;
+using System.Net.Sockets;
+using IdentityService.Admin.EntityFramework.Shared.DbContexts;
 
 namespace IdentityService.Admin.Helpers
 {
@@ -101,7 +104,7 @@ namespace IdentityService.Admin.Helpers
 
             switch (databaseProvider.ProviderType)
             {
-               
+
                 case DatabaseProviderType.MySql:
                     services.RegisterMySqlDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLoggingDbContext>(identityConnectionString, configurationConnectionString, persistedGrantsConnectionString, errorLoggingConnectionString, auditLoggingConnectionString);
                     break;
@@ -364,13 +367,15 @@ namespace IdentityService.Admin.Helpers
                         })
                     .AddOpenIdConnect(AuthenticationConsts.OidcAuthenticationScheme, options =>
                     {
-                        options.Authority = adminConfiguration.IdentityServerBaseUrl;
+                        options.Authority = System.Environment.GetEnvironmentVariable(ConfigurationConsts.IdentityServerBaseUrl); ;
                         options.RequireHttpsMetadata = adminConfiguration.RequireHttpsMetadata;
                         options.ClientId = adminConfiguration.ClientId;
                         options.ClientSecret = adminConfiguration.ClientSecret;
                         options.ResponseType = adminConfiguration.OidcResponseType;
 
                         options.Scope.Clear();
+
+
                         foreach (var scope in adminConfiguration.Scopes)
                         {
                             options.Scope.Add(scope);
@@ -387,7 +392,12 @@ namespace IdentityService.Admin.Helpers
                             NameClaimType = adminConfiguration.TokenValidationClaimName,
                             RoleClaimType = adminConfiguration.TokenValidationClaimRole
                         };
-
+                        ///define redirect url
+                        var httpContext = new HttpContextAccessor();
+                        var request = httpContext.HttpContext.Request;
+                        var baseUrl = $"{request.Scheme}://{request.Host.Value}";
+                        adminConfiguration.IdentityAdminRedirectUri = string.Format(adminConfiguration.IdentityAdminRedirectUri, baseUrl);
+               
                         options.Events = new OpenIdConnectEvents
                         {
                             OnMessageReceived = context => OnMessageReceived(context, adminConfiguration),
@@ -424,7 +434,7 @@ namespace IdentityService.Admin.Helpers
             var logDbConnectionString = System.Environment.GetEnvironmentVariable(ConfigurationConsts.IdentitySQLConnection);
             var auditLogDbConnectionString = System.Environment.GetEnvironmentVariable(ConfigurationConsts.IdentitySQLConnection);
 
-            var identityServerUri = adminConfiguration.IdentityServerBaseUrl;
+            var identityServerUri = System.Environment.GetEnvironmentVariable(ConfigurationConsts.IdentityServerBaseUrl); ;
             var healthChecksBuilder = services.AddHealthChecks()
                 .AddDbContextCheck<TConfigurationDbContext>("ConfigurationDbContext")
                 .AddDbContextCheck<TPersistedGrantDbContext>("PersistedGrantsDbContext")

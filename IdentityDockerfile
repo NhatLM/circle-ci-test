@@ -1,15 +1,23 @@
-# Build 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 WORKDIR /build
+
+COPY ["IdentityService.API/IdentityService.API.csproj", "IdentityService.API/"]
+COPY ["IdentityService.Admin.EntityFramework.Shared/IdentityService.Admin.EntityFramework.Shared.csproj", "IdentityService.Admin.EntityFramework.Shared/"]
+COPY ["IdentityService.Admin.EntityFramework.MySql/IdentityService.Admin.EntityFramework.MySql.csproj", "IdentityService.Admin.EntityFramework.MySql/"]
+RUN dotnet restore "IdentityService.API/IdentityService.API.csproj"
+
 COPY . .
-RUN dotnet restore
-WORKDIR /build/IdentityService.API
+WORKDIR "/build/IdentityService.API"
 RUN dotnet build "IdentityService.API.csproj" -c Release -o /app
 RUN dotnet publish -c release -r debian-x64 -o /app
 
-# Run
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS final
 WORKDIR /app
 COPY --from=build /app .
 ENV ASPNETCORE_URLS http://+:80
 ENTRYPOINT ["dotnet", "IdentityService.API.dll"]
+
+# docker build
+# docker build -f IdentityDockerfile -t identity .
+# docker run
+# docker run -e IdentitySQLConnection="server=identity-db-dev.cwzsaaxfb2wu.eu-central-1.rds.amazonaws.com;database=IdentityServer4Admin2;user=admin;password=Autoproff1234" -e AccountSQLConnection="server=identity-db-dev.cwzsaaxfb2wu.eu-central-1.rds.amazonaws.com;database=accounts;user=admin;password=Autoproff1234" -d -p 44308:80 --name identity identity
