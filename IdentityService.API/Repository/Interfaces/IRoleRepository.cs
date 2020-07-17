@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using IdentityService.API.Model;
 
 namespace IdentityService.API.Repository.Interfaces
 {
     public interface IRoleRepository
     {
-        string GetRole(int roleLevel);
+        Roles GetRoleByLevel(int roleLevel);
     }
 }

@@ -50,9 +50,15 @@ namespace IdentityService.API.Repository
         public List<Claim> GetClaims(CustUser user)
         {
             List<Claim> claims = new List<Claim>();
-            claims.Add(new Claim(JwtClaimTypes.Email, user.Email));
-            claims.Add(new Claim(JwtClaimTypes.Name, user.Name));
-            claims.Add(new Claim(RolesClaimConsts.Role, _roleRepository.GetRole(user.UserLevel ?? -1)));
+            claims.Add(new Claim(JwtClaimTypes.Email, user.Email ?? ""));
+            claims.Add(new Claim(JwtClaimTypes.Name, user.Name ?? ""));
+            Roles role = _roleRepository.GetRoleByLevel(user.UserLevel ?? -1);
+            string roleValue = "";
+            if(role != null && role.Name != null)
+            {
+                roleValue = role.Name;
+            }
+            claims.Add(new Claim(RolesClaimConsts.Role, roleValue));
             bool isAdmin = user.UserLevel < AuthorizationConsts.MinimumLevelToBeAdmin ? true : false;
             claims.Add(new Claim(RolesClaimConsts.IsAdmin, isAdmin.ToString()));
             return claims;

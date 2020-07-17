@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityService.Admin.Entit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityService.Admin", "IdentityService.Admin\IdentityService.Admin.csproj", "{8FCCDD56-DE8E-40B7-B239-656BF588EF7B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityService.UnitTest", "IdentityService.UnitTest\IdentityService.UnitTest.csproj", "{3E9C7BA0-6458-4FCA-8B68-81429E7C75A7}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityService.AuthorizationLambdaFunction", "IdentityService.AuthorizationLamdaFunction\IdentityService.AuthorizationLambdaFunction.csproj", "{DE7C6DAD-B2BA-4000-8249-228029791E2D}"
 EndProject
 Global
@@ -71,6 +73,18 @@ Global
 		{8FCCDD56-DE8E-40B7-B239-656BF588EF7B}.Release|x64.Build.0 = Release|Any CPU
 		{8FCCDD56-DE8E-40B7-B239-656BF588EF7B}.Release|x86.ActiveCfg = Release|Any CPU
 		{8FCCDD56-DE8E-40B7-B239-656BF588EF7B}.Release|x86.Build.0 = Release|Any CPU
+		{3E9C7BA0-6458-4FCA-8B68-81429E7C75A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E9C7BA0-6458-4FCA-8B68-81429E7C75A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E9C7BA0-6458-4FCA-8B68-81429E7C75A7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3E9C7BA0-6458-4FCA-8B68-81429E7C75A7}.Debug|x64.Build.0 = Debug|Any CPU
+		{3E9C7BA0-6458-4FCA-8B68-81429E7C75A7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3E9C7BA0-6458-4FCA-8B68-81429E7C75A7}.Debug|x86.Build.0 = Debug|Any CPU
+		{3E9C7BA0-6458-4FCA-8B68-81429E7C75A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E9C7BA0-6458-4FCA-8B68-81429E7C75A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E9C7BA0-6458-4FCA-8B68-81429E7C75A7}.Release|x64.ActiveCfg = Release|Any CPU
+		{3E9C7BA0-6458-4FCA-8B68-81429E7C75A7}.Release|x64.Build.0 = Release|Any CPU
+		{3E9C7BA0-6458-4FCA-8B68-81429E7C75A7}.Release|x86.ActiveCfg = Release|Any CPU
+		{3E9C7BA0-6458-4FCA-8B68-81429E7C75A7}.Release|x86.Build.0 = Release|Any CPU
 		{DE7C6DAD-B2BA-4000-8249-228029791E2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DE7C6DAD-B2BA-4000-8249-228029791E2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DE7C6DAD-B2BA-4000-8249-228029791E2D}.Debug|x64.ActiveCfg = Debug|Any CPU
