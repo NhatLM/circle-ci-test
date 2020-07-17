@@ -18,8 +18,6 @@ namespace IdentityService.API.Services
         public async Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
 
-            var sub = context.Subject.GetSubjectId();
-
             var user = _userRepository.FindBytId(context.Subject.GetSubjectId());
             if (user != null)
             {
@@ -28,9 +26,10 @@ namespace IdentityService.API.Services
             }
         }
 
-        public async Task IsActiveAsync(IsActiveContext context)
+       public async Task IsActiveAsync(IsActiveContext context)
         {
             var username = context.Subject.Claims.FirstOrDefault(x => x.Type == "sub");
+            context.IsActive = false;
             if (!string.IsNullOrEmpty(username?.Value))
             {
                 context.IsActive = true;
