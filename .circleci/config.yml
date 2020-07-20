@@ -1,22 +1,12 @@
  version: 2.1
 
+ orbs:
+  win: circleci/windows@2.2.0
+
  jobs:
-  run-unit-tests-and-build:
-    docker:
-      - image: mcr.microsoft.com/dotnet/core/sdk:3.1
-    steps:
-      - checkout
-      - run: find .
-      - run: dotnet restore
-      - run: dotnet test
-      - run: dotnet build
-
- workflows:
-  build-and-deploy:
-    jobs:
-      - run-unit-tests-and-build:
-          filters:
-            branch:
-              only: /(sprint\-\d+)/
-
-
+   build:
+     executor: win/default     
+    
+     steps:
+       - checkout
+       - run: dotnet build
