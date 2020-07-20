@@ -41,8 +41,6 @@ namespace IdentityService.UnitTest.TestRepositories
 
         [Theory]
         [InlineData(0)]
-        [InlineData(int.MaxValue)]
-        [InlineData(100)]
         public void GetRoleByLevel_GiveNonExistUserLevel_ShouldReturnCorrectRole(int level)
         {
             using (_context = new AccountsDbContextTest())
