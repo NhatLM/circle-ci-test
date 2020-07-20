@@ -1,0 +1,42 @@
+version: 2.1
+orbs:
+  aws-ecr: circleci/aws-ecr@6.10.0
+  aws-ecs: circleci/aws-ecs@1.2.0
+
+jobs:
+  run-unit-tests-and-build:
+    docker:
+      - image: mcr.microsoft.com/dotnet/core/sdk:3.1
+    steps:
+      - checkout
+      - run: find .
+      - run: dotnet restore
+      - run: dotnet test
+      - run: dotnet build
+workflows:
+  build-project:
+    jobs:      
+      - run-unit-tests-and-build:
+          filters:
+            branches:
+              only: /(sprint\-\d+)|master|dev/
+      - aws-ecr/build-and-push-image:
+          requires:
+            - run-unit-tests-and-build
+          filters:
+            branches:
+              only: /sprint\-\d+/
+          repo: "weathertest"
+          tag: "${IMG_TAG}"
+          dockerfile: "IdentityDockerfile"
+      - aws-ecs/deploy-service-update:
+          requires:
+            - aws-ecr/build-and-push-image
+          filters:
+            branches:
+              only: /sprint\-\d+/
+          force-new-deployment: true
+          family: "weather"
+          service-name: "weather-service"
+          cluster-name: "identity-cluster"
+          container-image-name-updates: "container=weather,tag=${IMG_TAG}"
